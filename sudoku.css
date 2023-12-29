@@ -1,0 +1,26 @@
+.sudoku {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 2rem;
+    row-gap: 1rem;
+}
+
+.grid {
+    border: solid 1px black;
+    display: inline-flex;
+}
+
+.row {
+
+}
+
+.cell {
+    height: 4rem;
+    width: 4rem;
+    border: solid 1px black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: xxx-large;
+}
