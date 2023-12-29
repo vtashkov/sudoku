@@ -36,4 +36,8 @@
     .noprint{
         display:none;
     }
+
+    div {
+        break-inside: avoid;
+      }
  }
