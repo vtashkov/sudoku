@@ -1,3 +1,10 @@
+.parameters {
+    display: flex;
+    justify-content: center;
+    margin: 2rem;
+    column-gap: 2rem;
+}
+
 .sudoku {
     display: flex;
     flex-wrap: wrap;
@@ -24,3 +31,9 @@
     align-items: center;
     font-size: xxx-large;
 }
+
+@media print{
+    .noprint{
+        display:none;
+    }
+ }

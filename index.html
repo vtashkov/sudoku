@@ -8,6 +8,13 @@
 </head>
 
 <body>
+    <div class="parameters noprint">
+        <label for="size">Size:</label>
+        <input type="number" id="size" name="size" min="1" value="4" onchange="generate_grids()">
+
+        <label for="grids">Grids:</label>
+        <input type="number" id="grids" name="grids" min="1" value="6" onchange="generate_grids()">
+    </div>
     <div id="sudoku" class="sudoku"></div>
 </body>
 
@@ -119,14 +126,19 @@
         return grid_element;
     }
 
-    const grid_size = 9;
-    const grid_count = 6;
-    const sudoku = document.getElementById("sudoku");
+    const generate_grids = () => {
+        const grid_size = document.getElementById("size").value;
+        const grid_count = document.getElementById("grids").value;
+        const sudoku = document.getElementById("sudoku");
+        sudoku.innerHTML = "";
 
-    for (let i = 0; i < grid_count; i++) {
-        grid_element = make_sudoku_element(grid_size);
-        sudoku.appendChild(grid_element);
+        for (let i = 0; i < grid_count; i++) {
+            grid_element = make_sudoku_element(grid_size);
+            sudoku.appendChild(grid_element);
+        }
     }
+
+    generate_grids();
 
 </script>
 
