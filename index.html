@@ -14,53 +14,72 @@
 <script>
     const getRandomInt = (max) => Math.floor(Math.random() * max);
 
-    const generate_sudoku_numbers = (size) => {
+    const generate_sudoku_grid = (size) => {
 
-        const is_sudoku_numbers_unfilled = (a) => {
-            for (let i = 0; i < a.length; i++) {
-                if (a[i] == undefined) {
-                    return true;
-                }
-            }
+        const cells_count = size * size;
+        const grid = new Array(cells_count);
 
-            return false;
+        rows_s = new Array(size);
+        col_s = new Array(size);
+        for (let i = 0; i < size; i++) {
+            rows_s[i] = new Set();
+            col_s[i] = new Set();
         }
 
-        const numbers_count = size * size;
-        let sudoku_numbers = new Array(numbers_count);
+        old_cell_values = new Array(cells_count);
+        for (let i = 0; i < cells_count; i++) {
+            old_cell_values[i] = new Set();
+        }
 
-        do {
-            rows_s = new Array(size);
-            col_s = new Array(size);
 
-            for (let i = 0; i < size; i++) {
-                rows_s[i] = new Set();
-                col_s[i] = new Set();
+        let cell_idx = 0;
+        while (cell_idx < cells_count) {
+            const row = Math.trunc(cell_idx / size);
+            const column = cell_idx % size;
+
+            // if the cell is not undefined, we need first to unregister (we went back)
+            if (grid[cell_idx] != undefined) {
+                rows_s[row].delete(grid[cell_idx]);
+                col_s[column].delete(grid[cell_idx]);
+                old_cell_values[cell_idx].add(grid[cell_idx]);
+                grid[cell_idx] = undefined;
+                for (let i = cell_idx + 1; i < old_cell_values.length; i++) old_cell_values[i] = new Set();
             }
 
-            for (let i = 0; i < numbers_count; i++) {
-                const row = Math.trunc(i / size);
-                const column = i % size;
-
-                const n = getRandomInt(size) + 1;
-
-                if (rows_s[row].has(n)) {
-                    break;
+            const tryAddingNumber = (n) => {
+                if (!rows_s[row].has(n) && !col_s[column].has(n) && !old_cell_values[cell_idx].has(n)) {
+                    rows_s[row].add(n);
+                    col_s[column].add(n);
+                    grid[cell_idx] = n;
+                    return true;
                 }
-
-                if (col_s[column].has(n)) {
-                    break;
-                }
-
-                rows_s[row].add(n);
-                col_s[column].add(n);
-
-                sudoku_numbers[i] = n;
+                return false;
             }
 
-        } while (is_sudoku_numbers_unfilled(sudoku_numbers));
 
-        return sudoku_numbers;
+            // first, try to fill it with random number
+            let n = getRandomInt(size) + 1;
+            tryAddingNumber(n);
+
+            // if it doesn't work, try any number
+            if (grid[cell_idx] == undefined) {
+                for (let i = 1; i <= size; i++) {
+                    if (tryAddingNumber(i)) {
+                        break;
+                    }
+                }
+            }
+
+            // if it doesn't work, go back one cell
+            if (grid[cell_idx] == undefined) {
+                cell_idx--;
+            } else {
+                cell_idx++;
+            }
+
+        }
+
+        return grid;
     }
 
     const mask_grid_cells = (a, size) => {
@@ -80,8 +99,8 @@
     }
 
     const make_sudoku_element = (size) => {
-        const numbers = generate_sudoku_numbers(size);
-        mask_grid_cells(numbers, size);
+        const grid = generate_sudoku_grid(size);
+        mask_grid_cells(grid, size);
 
         const grid_element = document.createElement("div");
         grid_element.classList.add("grid");
@@ -92,7 +111,7 @@
             for (let column = 0; column < size; column++) {
                 const cell_element = document.createElement("div");
                 cell_element.classList.add("cell")
-                cell_element.textContent = numbers[row * size + column];
+                cell_element.textContent = grid[row * size + column];
                 row_element.appendChild(cell_element);
             }
             grid_element.appendChild(row_element);
@@ -100,7 +119,7 @@
         return grid_element;
     }
 
-    const grid_size = 4;
+    const grid_size = 9;
     const grid_count = 6;
     const sudoku = document.getElementById("sudoku");
 
